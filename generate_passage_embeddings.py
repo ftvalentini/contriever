@@ -10,8 +10,10 @@ import argparse
 import csv
 import logging
 import pickle
+import time
 
 import numpy as np
+from tqdm import tqdm
 import torch
 
 import transformers
@@ -28,7 +30,7 @@ def embed_passages(args, passages, model, tokenizer):
     allids, allembeddings = [], []
     batch_ids, batch_text = [], []
     with torch.no_grad():
-        for k, p in enumerate(passages):
+        for k, p in enumerate(tqdm(passages)):
             batch_ids.append(p["id"])
             if args.no_title or not "title" in p:
                 text = p["text"]
@@ -62,6 +64,10 @@ def embed_passages(args, passages, model, tokenizer):
                 batch_ids = []
                 if k % 100000 == 0 and k > 0:
                     print(f"Encoded passages {total}")
+
+                # FV stop for some seconds:
+                # NOTE this is to prevent the PC with the GPU from unexpectedly shutting down
+                time.sleep(15)
 
     allembeddings = torch.cat(allembeddings, dim=0).numpy()
     return allids, allembeddings
