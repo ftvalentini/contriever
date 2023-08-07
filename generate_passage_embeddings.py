@@ -11,6 +11,7 @@ import csv
 import logging
 import pickle
 import time
+from pathlib import Path
 
 import numpy as np
 from tqdm import tqdm
@@ -102,6 +103,9 @@ def main(args):
 
     print(f"Total passages processed {len(allids)}. Written to {save_file}.")
 
+    # FV touch "DONE" file in $output_dir/../DONE with pathlib:
+    Path(args.output_dir).parent.joinpath("DONE").touch()
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
